@@ -1,66 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kaon Ta! Davao – Perez's Food Guide
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Prefinal Milestone Project – Kaon Ta! Davao: Carinderia & Eatery Guide**
+CS Elective 2 Full-Stack Development (Laravel) · Ateneo de Davao University
 
-## About Laravel
+**Name:** Chris Roldan Perez
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A Laravel 12 + SQLite app where the City Tourism Office can list carinderias and eateries by district, show each eatery's business permit, dishes and features, and collect reviews from residents. There is no login. Every page is public, and the review form has a Reviewer select instead.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate:fresh --seed
+npm install
+npm run build        # or npm run dev while developing
+php artisan serve
+```
 
-## Learning Laravel
+Then open http://127.0.0.1:8000
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Personalized Data
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Item | Value |
+|---|---|
+| Site title | Kaon Ta! Davao – Perez's Food Guide |
+| Districts (6) | Poblacion, Talomo, Agdao, Buhangin, Toril, Calinan |
+| Features (6) | Suki ni Perez, Budget Meal, Halal, Open 24 Hours, Aircon, Free WiFi |
+| User 1 | Chris Roldan Perez – perez@kaonta.test (password: `kaonta2026`) |
+| User 2 | Tita Perez – tita.perez@kaonta.test (password: `kaonta2026`) |
+| Other users | 10 users from the default `UserFactory` (12 users total) |
+| My eatery | Carinderia ni Perez (slug `carinderia-ni-perez`), Poblacion, San Pedro St., Poblacion, Davao City, budget, specialty Tinolang Manok, open |
+| My eatery's features | Suki ni Perez, Budget Meal (set with `sync()`) |
+| My eatery's permit | DVO-2026-0904, expires on September 4, 2027 (my birthday) |
+| My eatery's dishes | Tinolang Manok ₱85.00 (Bestseller), Kinilaw na Tuna ₱120.00, Durian Shake ₱75.00 |
+| My eatery's reviews | 3 reviews, including Tita Perez, 5 stars: "Lami kaayo! Balik-balikan ni Tita Perez." |
+| Other eateries | 14 from `EateryFactory` (3 of them use the `closed()` state), each with 1 permit, 2–5 dishes and 1–3 features |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Totals after seeding: 6 districts, 6 features, 12 users, 15 eateries (3 closed), 15 permits.
 
-## Laravel Sponsors
+## Relationships
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Relationship | Type | Why this type fits |
+|---|---|---|
+| District → Eatery | `hasMany` / `belongsTo` | A district like Poblacion can have a lot of eateries, but one eatery is only located in one district, so the foreign key `district_id` is on the eateries table. |
+| Eatery → Dish | `hasMany` / `belongsTo` | Each carinderia serves many dishes, but a dish row like "Tinolang Manok ₱85.00" belongs to just one eatery's menu. |
+| Eatery → Review | `hasMany` / `belongsTo` | An eatery can get many reviews from residents, and each review is about only one eatery. |
+| User → Review | `hasMany` / `belongsTo` | One reviewer can write many reviews, but every review has exactly one writer, which is why the reviewer page can list all of a user's reviews. |
+| Eatery → Permit | `hasOne` / `belongsTo` | An eatery only has one business permit at a time, so `eatery_id` in permits is unique, which makes it one-to-one instead of one-to-many. |
+| Eatery ↔ Feature | `belongsToMany` / `belongsToMany` | An eatery can have many features (Halal, Aircon...) and a feature is shared by many eateries, so we need the `eatery_feature` pivot table in between. |
+| District → Review (through Eatery) | `hasManyThrough` | Reviews are not directly connected to districts, but we can reach them through the eateries in that district, so we can count "N reviews in Talomo" without looping through every eatery. |
 
-### Premium Partners
+## Route List
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Output of `php artisan route:list --except-vendor`:
 
-## Contributing
+```
+  GET|HEAD        / ............................................................................ home › HomeController
+  GET|HEAD        districts ............................................... districts.index › DistrictController@index
+  GET|HEAD        districts/{district} ...................................... districts.show › DistrictController@show
+  GET|HEAD        eateries ................................................... eateries.index › EateryController@index
+  POST            eateries ................................................... eateries.store › EateryController@store
+  GET|HEAD        eateries/create .......................................... eateries.create › EateryController@create
+  GET|HEAD        eateries/{eatery} ............................................ eateries.show › EateryController@show
+  PUT|PATCH       eateries/{eatery} ........................................ eateries.update › EateryController@update
+  DELETE          eateries/{eatery} ...................................... eateries.destroy › EateryController@destroy
+  GET|HEAD        eateries/{eatery}/edit ....................................... eateries.edit › EateryController@edit
+  POST            eateries/{eatery}/reviews .......................... eateries.reviews.store › ReviewController@store
+  GET|HEAD        reviewers/{user} .......................................... reviewers.show › ReviewerController@show
+  DELETE          reviews/{review} ........................................ reviews.destroy › ReviewController@destroy
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+                                                                                                   Showing [13] routes
+```
 
-## Code of Conduct
+## Screenshots
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Eatery list
+![Eatery list](screenshots/eatery-list.png)
 
-## Security Vulnerabilities
+### Eatery page with reviews
+![Eatery page with reviews](screenshots/eatery-page.png)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Create form showing validation errors
+![Create form with validation errors](screenshots/create-validation-errors.png)
