@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEateryRequest;
+use App\Http\Requests\UpdateEateryRequest;
 use App\Models\District;
 use App\Models\Eatery;
 use App\Models\Feature;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class EateryController extends Controller
 {
@@ -79,5 +82,108 @@ class EateryController extends Controller
         $users = User::orderBy('name')->get();
 
         return view('eateries.show', compact('eatery', 'users'));
+    }
+
+    /**
+     * Show the "Add Eatery" form.
+     */
+    public function create()
+    {
+        $districts = District::orderBy('name')->get();
+        $features = Feature::orderBy('name')->get();
+
+        return view('eateries.create', compact('districts', 'features'));
+    }
+
+    /**
+     * Save a new eatery.
+     * StoreEateryRequest validates first; if it fails, Laravel goes back
+     * to the form with the errors and old input automatically.
+     */
+    public function store(StoreEateryRequest $request)
+    {
+        $data = $request->validated();
+
+        // 1. create the eatery; the slug is made from the name
+        $eatery = Eatery::create([
+            'district_id' => $data['district_id'],
+            'name' => $data['name'],
+            'slug' => Str::slug($data['name']),
+            'address' => $data['address'],
+            'price_range' => $data['price_range'],
+            'specialty' => $data['specialty'] ?? null,
+            'is_open' => $data['is_open'] ?? false, // unchecked box = false
+        ]);
+
+        // 2. create the permit through the hasOne relationship (fills eatery_id)
+        $eatery->permit()->create([
+            'permit_no' => $data['permit_no'],
+            'expires_on' => $data['expires_on'],
+        ]);
+
+        // 3. sync() writes the pivot rows for the checked features
+        $eatery->features()->sync($data['features']);
+
+        return redirect()->route('eateries.show', $eatery)->with('success', 'Eatery added.');
+    }
+
+    /**
+     * Show the edit form, pre-filled with the eatery, its permit and features.
+     */
+    public function edit(Eatery $eatery)
+    {
+        $eatery->load(['permit', 'features']);
+
+        $districts = District::orderBy('name')->get();
+        $features = Feature::orderBy('name')->get();
+
+        return view('eateries.edit', compact('eatery', 'districts', 'features'));
+    }
+
+    /**
+     * Save changes to an eatery, its permit and its features.
+     */
+    public function update(UpdateEateryRequest $request, Eatery $eatery)
+    {
+        $data = $request->validated();
+
+        // the slug changes too if the name changes
+        $eatery->update([
+            'district_id' => $data['district_id'],
+            'name' => $data['name'],
+            'slug' => Str::slug($data['name']),
+            'address' => $data['address'],
+            'price_range' => $data['price_range'],
+            'specialty' => $data['specialty'] ?? null,
+            'is_open' => $data['is_open'] ?? false,
+        ]);
+
+        // update the permit through the relationship
+        // (updateOrCreate also creates it if the eatery had no permit)
+        $eatery->permit()->updateOrCreate([], [
+            'permit_no' => $data['permit_no'],
+            'expires_on' => $data['expires_on'],
+        ]);
+
+        // sync() removes unchecked features and adds new ones in the pivot
+        $eatery->features()->sync($data['features']);
+
+        return redirect()->route('eateries.show', $eatery)->with('success', 'Eatery updated.');
+    }
+
+    /**
+     * Delete an eatery and everything that belongs to it.
+     * The children are deleted first through the relationships,
+     * otherwise the foreign keys would stop us from deleting the eatery.
+     */
+    public function destroy(Eatery $eatery)
+    {
+        $eatery->permit()->delete();     // hasOne
+        $eatery->dishes()->delete();     // hasMany
+        $eatery->reviews()->delete();    // hasMany
+        $eatery->features()->detach();   // removes the eatery_feature pivot rows
+        $eatery->delete();
+
+        return redirect()->route('eateries.index')->with('success', 'Eatery deleted.');
     }
 }

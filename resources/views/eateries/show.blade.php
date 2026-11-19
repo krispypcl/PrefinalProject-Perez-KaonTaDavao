@@ -17,6 +17,17 @@
                     &middot; {{ $eatery->address }}
                 </p>
             </div>
+
+            {{-- Edit link + Delete form (delete must be a form with @csrf, never a GET link) --}}
+            <div class="flex gap-2 shrink-0">
+                <a href="{{ route('eateries.edit', $eatery) }}" class="rounded bg-orange-700 px-4 py-2 text-white hover:bg-orange-800">Edit</a>
+
+                <form method="POST" action="{{ route('eateries.destroy', $eatery) }}" onsubmit="return confirm('Delete this eatery?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700">Delete</button>
+                </form>
+            </div>
         </div>
 
         <dl class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
