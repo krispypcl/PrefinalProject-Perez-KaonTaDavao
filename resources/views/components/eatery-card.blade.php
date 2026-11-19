@@ -3,21 +3,21 @@
      (with(), withAvg(), withCount()) so this card does not run extra queries. --}}
 @props(['eatery'])
 
-<div class="bg-white rounded-lg shadow p-5 flex flex-col gap-2">
+<div class="card card-hover flex flex-col gap-2 p-5">
     <div class="flex items-start justify-between gap-2">
-        <a href="{{ route('eateries.show', $eatery) }}" class="text-lg font-semibold text-orange-800 hover:underline">
+        <a href="{{ route('eateries.show', $eatery) }}" class="link font-display text-lg font-semibold">
             {{ $eatery->name }}
         </a>
 
         @if (! $eatery->is_open)
-            <span class="shrink-0 rounded bg-gray-700 px-2 py-0.5 text-xs font-semibold text-white">Closed</span>
+            <span class="badge-closed">Closed</span>
         @endif
     </div>
 
-    <div class="text-sm text-gray-600">
+    <div class="muted text-sm">
         <a href="{{ route('districts.show', $eatery->district) }}" class="hover:underline">{{ $eatery->district->name }}</a>
         {{-- price range as peso signs --}}
-        &middot; <span class="font-semibold text-green-700">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }}</span>
+        &middot; <span class="font-semibold text-green-700 dark:text-green-400">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }}</span>
     </div>
 
     @if ($eatery->specialty)
@@ -27,10 +27,7 @@
     {{-- each feature badge links to the list filtered by that feature --}}
     <div class="flex flex-wrap gap-1">
         @foreach ($eatery->features as $feature)
-            <a href="{{ route('eateries.index', ['feature' => $feature->name]) }}"
-               class="rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-800 hover:bg-orange-200">
-                {{ $feature->name }}
-            </a>
+            <a href="{{ route('eateries.index', ['feature' => $feature->name]) }}" class="badge">{{ $feature->name }}</a>
         @endforeach
     </div>
 

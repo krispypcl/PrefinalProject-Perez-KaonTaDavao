@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-3xl font-bold mb-6">Districts</h1>
+    <h1 class="font-display mb-6 text-4xl font-bold">Districts</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         @foreach ($districts as $district)
-            <a href="{{ route('districts.show', $district) }}" class="bg-white rounded-lg shadow p-5 hover:bg-orange-50">
-                <p class="text-lg font-semibold text-orange-800">{{ $district->name }}</p>
-                <p class="text-sm text-gray-600">
+            <a href="{{ route('districts.show', $district) }}" class="card card-hover group p-5">
+                <p class="font-display text-lg font-semibold text-orange-800 group-hover:underline dark:text-orange-300">{{ $district->name }}</p>
+                <p class="muted text-sm">
                     {{ $district->eateries_count }} {{ Str::plural('eatery', $district->eateries_count) }}
                 </p>
             </a>

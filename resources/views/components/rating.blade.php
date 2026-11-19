@@ -4,10 +4,10 @@
 @props(['value' => 0, 'count' => null])
 
 @if ($count !== null && $count == 0)
-    <span class="text-gray-500">No reviews yet</span>
+    <span class="muted">No reviews yet</span>
 @else
     {{-- gold star while $i is within the rounded rating, gray for the rest --}}
-    <span class="tracking-tight">@for ($i = 1; $i <= 5; $i++)<span class="{{ $i <= round($value) ? 'text-amber-500' : 'text-gray-300' }}">★</span>@endfor</span>
+    <span class="tracking-tight">@for ($i = 1; $i <= 5; $i++)<span class="{{ $i <= round($value) ? 'text-amber-500' : 'text-gray-300 dark:text-stone-600' }}">★</span>@endfor</span>
 
     @if ($count !== null)
         <span>{{ number_format($value, 1) }} ★ ({{ $count }} {{ Str::plural('review', $count) }})</span>
