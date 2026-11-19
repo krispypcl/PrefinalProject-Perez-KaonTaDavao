@@ -13,7 +13,7 @@
                 </h1>
 
                 <p class="muted mt-1">
-                    <a href="{{ route('districts.show', $eatery->district) }}" class="hover:underline">{{ $eatery->district->name }}</a>
+                    <a href="{{ route('districts.show', $eatery->district) }}" class="link-subtle">{{ $eatery->district->name }}</a>
                     &middot; {{ $eatery->address }}
                 </p>
             </div>
@@ -98,7 +98,7 @@
                             <form method="POST" action="{{ route('reviews.destroy', $review) }}" class="mt-2" onsubmit="return confirm('Delete this review?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="cursor-pointer text-sm text-red-600 hover:underline dark:text-red-400">Delete</button>
+                                <button type="submit" class="-mx-2 cursor-pointer rounded px-2 py-0.5 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950">Delete</button>
                             </form>
                         </div>
                     @empty
@@ -142,7 +142,7 @@
                         {{-- Reviewer (there is no login, so we pick a seeded user) --}}
                         <div>
                             <label for="user_id" class="form-label">Reviewer</label>
-                            <select id="user_id" name="user_id" class="form-input">
+                            <select id="user_id" name="user_id" class="form-input" data-dropdown>
                                 <option value="">-- Choose a reviewer --</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}" @selected(old('user_id') == $user->id)>{{ $user->name }}</option>
@@ -156,7 +156,7 @@
                         {{-- Rating --}}
                         <div>
                             <label for="rating" class="form-label">Rating</label>
-                            <select id="rating" name="rating" class="form-input">
+                            <select id="rating" name="rating" class="form-input" data-dropdown>
                                 <option value="">-- Choose a rating --</option>
                                 @for ($i = 5; $i >= 1; $i--)
                                     <option value="{{ $i }}" @selected(old('rating') == $i)>{{ $i }} {{ Str::plural('star', $i) }}</option>

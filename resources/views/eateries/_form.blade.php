@@ -17,7 +17,7 @@
     {{-- District --}}
     <div>
         <label for="district_id" class="form-label">District</label>
-        <select id="district_id" name="district_id" class="form-input">
+        <select id="district_id" name="district_id" class="form-input" data-dropdown>
             <option value="">-- Choose a district --</option>
             @foreach ($districts as $district)
                 <option value="{{ $district->id }}" @selected(old('district_id', $eatery->district_id) == $district->id)>{{ $district->name }}</option>
@@ -40,7 +40,7 @@
     {{-- Price range --}}
     <div>
         <label for="price_range" class="form-label">Price range</label>
-        <select id="price_range" name="price_range" class="form-input">
+        <select id="price_range" name="price_range" class="form-input" data-dropdown>
             <option value="">-- Choose a price range --</option>
             <option value="budget" @selected(old('price_range', $eatery->price_range) == 'budget')>₱ Budget</option>
             <option value="mid" @selected(old('price_range', $eatery->price_range) == 'mid')>₱₱ Mid</option>
@@ -66,7 +66,7 @@
     <div class="md:col-span-2">
         <input type="hidden" name="is_open" value="0">
         <label class="inline-flex cursor-pointer items-center gap-2">
-            <input type="checkbox" name="is_open" value="1" class="accent-orange-700" @checked(old('is_open', $eatery->is_open))>
+            <input type="checkbox" name="is_open" value="1" @checked(old('is_open', $eatery->is_open))>
             <span class="font-medium">Open (accepting reviews)</span>
         </label>
         @error('is_open')
@@ -82,7 +82,7 @@
         <div class="flex flex-wrap gap-4">
             @foreach ($features as $feature)
                 <label class="inline-flex cursor-pointer items-center gap-2">
-                    <input type="checkbox" name="features[]" value="{{ $feature->id }}" class="accent-orange-700"
+                    <input type="checkbox" name="features[]" value="{{ $feature->id }}"
                            @checked(session()->hasOldInput() ? in_array($feature->id, old('features', [])) : $eatery->features->contains($feature))>
                     <span>{{ $feature->name }}</span>
                 </label>

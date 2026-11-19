@@ -8,14 +8,14 @@
     <form method="GET" action="{{ route('eateries.index') }}" class="card mb-6 grid grid-cols-1 gap-3 p-4 md:grid-cols-4">
         <input type="text" name="q" value="{{ request('q') }}" placeholder="Search name or specialty" class="form-input">
 
-        <select name="district" class="form-input">
+        <select name="district" class="form-input" data-dropdown>
             <option value="">All districts</option>
             @foreach ($districts as $district)
                 <option value="{{ $district->id }}" @selected(request('district') == $district->id)>{{ $district->name }}</option>
             @endforeach
         </select>
 
-        <select name="feature" class="form-input">
+        <select name="feature" class="form-input" data-dropdown>
             <option value="">All features</option>
             @foreach ($features as $feature)
                 <option value="{{ $feature->name }}" @selected(request('feature') == $feature->name)>{{ $feature->name }}</option>
@@ -38,8 +38,9 @@
             @endforeach
         </div>
 
+        {{-- page links using our own themed view (partials/pagination.blade.php) --}}
         <div class="mt-6">
-            {{ $eateries->links() }}
+            {{ $eateries->links('partials.pagination') }}
         </div>
     @endif
 @endsection
