@@ -43,7 +43,7 @@ Totals after seeding: 6 districts, 6 features, 12 users, 15 eateries (3 closed),
 
 ## Relationships
 
-| Relationship | Type | Why this type fits |
+| Relationship | Type | Why This Type Fits |
 |---|---|---|
 | District → Eatery | `hasMany` / `belongsTo` | A district like Poblacion can have a lot of eateries, but one eatery is only located in one district, so the foreign key `district_id` is on the eateries table. |
 | Eatery → Dish | `hasMany` / `belongsTo` | Each carinderia serves many dishes, but a dish row like "Tinolang Manok ₱85.00" belongs to just one eatery's menu. |
@@ -77,11 +77,11 @@ Output of `php artisan route:list --except-vendor`:
 
 ## Screenshots
 
-### Eatery list
+### Eatery List
 ![Eatery list](screenshots/eatery-list.png)
 
-### Eatery page with reviews
+### Eatery Page with Reviews
 ![Eatery page with reviews](screenshots/eatery-page.png)
 
-### Create form showing validation errors
+### Create Form Showing Validation Errors
 ![Create form with validation errors](screenshots/create-validation-errors.png)
