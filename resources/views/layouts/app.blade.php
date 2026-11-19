@@ -24,20 +24,28 @@
 </head>
 <body class="flex min-h-screen flex-col bg-amber-50 text-gray-800 transition-colors duration-300 dark:bg-stone-900 dark:text-stone-300">
 
-    <header class="bg-orange-700 text-white shadow dark:bg-orange-950 dark:text-orange-100">
+    {{-- sticky: the header stays at the top while scrolling --}}
+    <header class="sticky top-0 z-40 bg-orange-700 text-white shadow dark:bg-orange-950 dark:text-orange-100">
         <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between">
-            <a href="{{ route('home') }}" class="font-display text-2xl font-bold transition-opacity hover:opacity-90">Kaon Ta! Davao – Perez's Food Guide</a>
+            <a href="{{ route('home') }}" class="font-display text-2xl font-bold transition-opacity hover:opacity-85">Kaon Ta! Davao – Perez's Food Guide</a>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
                 {{-- navigation links (partial) --}}
                 @include('partials.nav')
 
-                {{-- dark / light mode button (the click is handled in resources/js/app.js).
-                     dark:hidden and dark:inline swap the icon without any JavaScript. --}}
+                {{-- Dark / light mode button (the click is handled in resources/js/theme.js).
+                     dark:hidden and dark:block swap the moon and sun icons without any JavaScript. --}}
                 <button type="button" id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode"
-                        class="rounded-full p-2 text-lg leading-none transition hover:bg-white/15 motion-safe:hover:rotate-12">
-                    <span class="dark:hidden">🌙</span>
-                    <span class="hidden dark:inline">☀️</span>
+                        class="group cursor-pointer rounded-full p-2 transition-colors duration-200 hover:bg-white/15">
+                    {{-- moon (shown in light mode) --}}
+                    <svg class="size-5 transition-transform duration-200 group-hover:scale-110 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                    {{-- sun (shown in dark mode) --}}
+                    <svg class="hidden size-5 transition-transform duration-200 group-hover:scale-110 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                    </svg>
                 </button>
             </div>
         </div>

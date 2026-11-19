@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source "../**/*.blade.php";
 @source "../**/*.js";
@@ -29,22 +28,44 @@
     }
 }
 
-/* native inputs (like the date picker) also switch to dark */
-.dark {
-    color-scheme: dark;
-}
-
-/* in dark mode, headings are a bit brighter than the soft gray body text */
+/* =========================================================
+   Base styles (plain HTML elements)
+   ========================================================= */
 @layer base {
+    /* native inputs (like the date picker) also switch to dark */
+    .dark {
+        color-scheme: dark;
+    }
+
+    /* in dark mode, headings are a bit brighter than the soft gray body text */
     h1,
     h2 {
         @apply dark:text-stone-200;
     }
+
+    /* orange checkboxes instead of the default blue */
+    input[type='checkbox'] {
+        @apply size-4 cursor-pointer accent-orange-700;
+    }
+
+    /* highlighted text */
+    ::selection {
+        @apply bg-orange-200 text-orange-950;
+    }
+
+    /* visible outline only when using the keyboard (Tab), not when clicking */
+    a:focus-visible,
+    button:focus-visible {
+        @apply rounded outline-2 outline-offset-2 outline-orange-500;
+    }
 }
 
-/* Reusable classes built from Tailwind utilities with @apply,
-   so the same long class lists are not copied into every view */
+/* =========================================================
+   Reusable classes built from Tailwind utilities with @apply,
+   so the same long class lists are not copied into every view
+   ========================================================= */
 @layer components {
+    /* ----- Cards ----- */
     .card {
         @apply rounded-lg bg-white shadow dark:bg-stone-800 dark:shadow-black/30;
     }
@@ -54,6 +75,7 @@
         @apply transition duration-200 hover:shadow-lg motion-safe:hover:-translate-y-1;
     }
 
+    /* ----- Buttons ----- */
     .btn {
         @apply inline-block cursor-pointer rounded px-4 py-2 text-center font-medium transition duration-150 motion-safe:active:scale-95;
     }
@@ -70,6 +92,46 @@
         @apply border border-gray-300 hover:bg-gray-100 dark:border-stone-600 dark:hover:bg-stone-700;
     }
 
+    /* ----- Header navigation: a soft pill appears behind the link ----- */
+    .nav-link {
+        @apply rounded-full px-3 py-1.5 transition-colors duration-200 hover:bg-white/15;
+    }
+
+    /* the link of the page we are on */
+    .nav-link-active {
+        @apply bg-white/20;
+    }
+
+    /* ----- Text links: no underline, a highlighter slides in behind the text instead ----- */
+    .link,
+    .link-subtle {
+        --link-highlight: var(--color-orange-200);
+        border-radius: 3px;
+        padding: 0 3px; /* a little room around the text for the highlight... */
+        margin: 0 -3px; /* ...without moving the text */
+        background-image: linear-gradient(var(--link-highlight), var(--link-highlight));
+        background-repeat: no-repeat;
+        background-size: 0% 100%; /* the highlight starts with 0 width... */
+        transition: background-size 0.3s ease, color 0.2s ease;
+    }
+
+    /* darker, see-through highlight in dark mode */
+    .dark .link,
+    .dark .link-subtle {
+        --link-highlight: color-mix(in oklab, var(--color-orange-800) 50%, transparent);
+    }
+
+    .link:hover,
+    .link-subtle:hover {
+        background-size: 100% 100%; /* ...and grows to full width on hover */
+    }
+
+    /* .link is orange, .link-subtle keeps the color of the text around it */
+    .link {
+        @apply text-orange-800 dark:text-orange-300;
+    }
+
+    /* ----- Forms ----- */
     .form-label {
         @apply mb-1 block font-medium;
     }
@@ -83,7 +145,61 @@
         @apply mt-1 text-sm text-red-600 dark:text-red-400;
     }
 
-    /* feature badges */
+    /* ----- Custom dropdown (built by resources/js/dropdown.js) ----- */
+    .dropdown {
+        @apply relative;
+    }
+
+    .dropdown-button {
+        @apply flex cursor-pointer items-center justify-between gap-2 text-left;
+    }
+
+    /* the "-- Choose ... --" text is gray like a placeholder */
+    .dropdown-placeholder {
+        @apply text-gray-400 dark:text-stone-500;
+    }
+
+    .dropdown-chevron {
+        @apply size-4 shrink-0 text-gray-400 transition-transform duration-200;
+    }
+
+    /* closed menu: invisible, slightly smaller, and clicks go through it */
+    .dropdown-menu {
+        @apply pointer-events-none absolute z-30 mt-1 max-h-60 w-full origin-top scale-95 overflow-auto rounded-md border border-gray-200 bg-white p-1 opacity-0 shadow-lg transition duration-150 dark:border-stone-700 dark:bg-stone-800;
+    }
+
+    /* open menu (the .is-open class is added by the JavaScript) */
+    .dropdown.is-open .dropdown-menu {
+        @apply pointer-events-auto scale-100 opacity-100;
+    }
+
+    .dropdown.is-open .dropdown-chevron {
+        @apply rotate-180;
+    }
+
+    .dropdown-item {
+        @apply cursor-pointer rounded px-3 py-2 transition-colors hover:bg-orange-50 focus:bg-orange-50 focus:outline-none dark:hover:bg-stone-700 dark:focus:bg-stone-700;
+    }
+
+    /* the option that is currently chosen */
+    .dropdown-item[aria-selected='true'] {
+        @apply font-semibold text-orange-700 dark:text-orange-300;
+    }
+
+    /* ----- Pagination (partials/pagination.blade.php) ----- */
+    .page-link {
+        @apply flex size-10 items-center justify-center rounded-full font-medium transition-colors duration-150 hover:bg-orange-100 dark:hover:bg-stone-700;
+    }
+
+    .page-link-active {
+        @apply bg-orange-700 text-white hover:bg-orange-700 dark:text-orange-50 dark:hover:bg-orange-700;
+    }
+
+    .page-link-disabled {
+        @apply cursor-default opacity-40 hover:bg-transparent dark:hover:bg-transparent;
+    }
+
+    /* ----- Badges ----- */
     .badge {
         @apply rounded-full bg-orange-100 px-2.5 py-0.5 text-xs text-orange-800 transition-colors hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800;
     }
@@ -92,10 +208,7 @@
         @apply shrink-0 rounded bg-gray-700 px-2 py-0.5 text-xs font-semibold text-white dark:bg-stone-600;
     }
 
-    .link {
-        @apply text-orange-800 transition-colors hover:text-orange-600 hover:underline dark:text-orange-300 dark:hover:text-orange-200;
-    }
-
+    /* ----- Text ----- */
     .muted {
         @apply text-gray-600 dark:text-stone-400;
     }
