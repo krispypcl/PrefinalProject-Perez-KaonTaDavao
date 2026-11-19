@@ -69,7 +69,7 @@
             <section class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-bold mb-3">Dishes</h2>
 
-                <ul class="divide-y">
+                <ul class="divide-y divide-gray-200">
                     @forelse ($eatery->dishes as $dish)
                         <li class="flex justify-between py-2">
                             <span>
@@ -92,7 +92,7 @@
 
                 <div class="flex flex-col gap-4">
                     @forelse ($eatery->reviews as $review)
-                        <div class="border-b pb-3">
+                        <div class="border-b border-gray-200 pb-3">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <a href="{{ route('reviewers.show', $review->user) }}" class="font-semibold text-orange-800 hover:underline">
                                     {{ $review->user->name }}
