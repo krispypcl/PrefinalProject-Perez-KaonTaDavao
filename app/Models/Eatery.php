@@ -64,18 +64,4 @@ class Eatery extends Model
     {
         return $this->belongsToMany(Feature::class);
     }
-
-    // ----- Helpers used by the views -----
-
-    // Shows the price range as peso signs: budget = ₱, mid = ₱₱, splurge = ₱₱₱
-    public function priceSigns()
-    {
-        if ($this->price_range == 'splurge') {
-            return '₱₱₱';
-        } elseif ($this->price_range == 'mid') {
-            return '₱₱';
-        }
-
-        return '₱';
-    }
 }

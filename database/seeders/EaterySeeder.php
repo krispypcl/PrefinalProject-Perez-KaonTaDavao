@@ -39,9 +39,11 @@ class EaterySeeder extends Seeder
         ]);
 
         // exactly 3 dishes, created through the hasMany relationship
-        $myEatery->dishes()->create(['name' => 'Tinolang Manok', 'price' => 85.00, 'is_bestseller' => true]);
-        $myEatery->dishes()->create(['name' => 'Kinilaw na Tuna', 'price' => 120.00, 'is_bestseller' => false]);
-        $myEatery->dishes()->create(['name' => 'Durian Shake', 'price' => 75.00, 'is_bestseller' => false]);
+        $myEatery->dishes()->createMany([
+            ['name' => 'Tinolang Manok', 'price' => 85.00, 'is_bestseller' => true],
+            ['name' => 'Kinilaw na Tuna', 'price' => 120.00, 'is_bestseller' => false],
+            ['name' => 'Durian Shake', 'price' => 75.00, 'is_bestseller' => false],
+        ]);
 
         // sync() makes the pivot rows exactly these two features
         $featureIds = Feature::whereIn('name', ['Suki ni Perez', 'Budget Meal'])->pluck('id');

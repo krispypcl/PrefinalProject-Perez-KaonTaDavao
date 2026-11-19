@@ -75,8 +75,6 @@ class EateryController extends Controller
                 $query->with('user')->latest(); // newest review first + reviewer name
             },
         ]);
-        $eatery->loadAvg('reviews', 'rating');
-        $eatery->loadCount('reviews');
 
         // users for the Reviewer select in the review form, A-Z
         $users = User::orderBy('name')->get();
@@ -89,10 +87,14 @@ class EateryController extends Controller
      */
     public function create()
     {
+        // an empty eatery so the shared _form can use $eatery on both create and edit
+        // (is_open is true so the "Open" box starts checked)
+        $eatery = new Eatery(['is_open' => true]);
+
         $districts = District::orderBy('name')->get();
         $features = Feature::orderBy('name')->get();
 
-        return view('eateries.create', compact('districts', 'features'));
+        return view('eateries.create', compact('eatery', 'districts', 'features'));
     }
 
     /**
@@ -103,17 +105,12 @@ class EateryController extends Controller
     public function store(StoreEateryRequest $request)
     {
         $data = $request->validated();
+        $data['slug'] = Str::slug($data['name']);
 
-        // 1. create the eatery; the slug is made from the name
-        $eatery = Eatery::create([
-            'district_id' => $data['district_id'],
-            'name' => $data['name'],
-            'slug' => Str::slug($data['name']),
-            'address' => $data['address'],
-            'price_range' => $data['price_range'],
-            'specialty' => $data['specialty'] ?? null,
-            'is_open' => $data['is_open'] ?? false, // unchecked box = false
-        ]);
+        // 1. create the eatery. $fillable only lets the eatery columns through,
+        //    so features, permit_no and expires_on are skipped here.
+        //    (is_open is always sent: 0 from the hidden input or 1 from the checkbox)
+        $eatery = Eatery::create($data);
 
         // 2. create the permit through the hasOne relationship (fills eatery_id)
         $eatery->permit()->create([
@@ -146,21 +143,12 @@ class EateryController extends Controller
     public function update(UpdateEateryRequest $request, Eatery $eatery)
     {
         $data = $request->validated();
+        $data['slug'] = Str::slug($data['name']); // the slug follows the new name
 
-        // the slug changes too if the name changes
-        $eatery->update([
-            'district_id' => $data['district_id'],
-            'name' => $data['name'],
-            'slug' => Str::slug($data['name']),
-            'address' => $data['address'],
-            'price_range' => $data['price_range'],
-            'specialty' => $data['specialty'] ?? null,
-            'is_open' => $data['is_open'] ?? false,
-        ]);
+        $eatery->update($data);
 
-        // update the permit through the relationship
-        // (updateOrCreate also creates it if the eatery had no permit)
-        $eatery->permit()->updateOrCreate([], [
+        // update the permit through the hasOne relationship
+        $eatery->permit()->update([
             'permit_no' => $data['permit_no'],
             'expires_on' => $data['expires_on'],
         ]);

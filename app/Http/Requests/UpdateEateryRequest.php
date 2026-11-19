@@ -26,9 +26,6 @@ class UpdateEateryRequest extends FormRequest
         // the {eatery} from the URL (already a model because of route model binding)
         $eatery = $this->route('eatery');
 
-        // the id of this eatery's permit (null if it somehow has no permit)
-        $permitId = $eatery->permit ? $eatery->permit->id : null;
-
         return [
             'name' => ['required', 'string', 'max:100', Rule::unique('eateries', 'name')->ignore($eatery->id)],
             'district_id' => ['required', 'exists:districts,id'],
@@ -38,7 +35,7 @@ class UpdateEateryRequest extends FormRequest
             'is_open' => ['boolean'],
             'features' => ['required', 'array', 'min:1'],
             'features.*' => ['exists:features,id'],
-            'permit_no' => ['required', 'regex:/^DVO-\d{4}-\d{4,5}$/', Rule::unique('permits', 'permit_no')->ignore($permitId)],
+            'permit_no' => ['required', 'regex:/^DVO-\d{4}-\d{4,5}$/', Rule::unique('permits', 'permit_no')->ignore($eatery->permit?->id)],
             'expires_on' => ['required', 'date', 'after:today'],
         ];
     }

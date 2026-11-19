@@ -18,14 +18,11 @@ class ReviewFactory extends Factory
      */
     public function definition(): array
     {
-        $date = fake()->dateTimeBetween('-6 months', 'now');
-
         return [
             'user_id' => User::inRandomOrder()->value('id'), // a random seeded reviewer
             'rating' => fake()->numberBetween(1, 5),
             'body' => fake()->sentence(12),                  // always longer than 10 characters
-            'created_at' => $date,                           // different dates so "newest first" shows
-            'updated_at' => $date,
+            'created_at' => fake()->dateTimeBetween('-6 months', 'now'), // different dates so "newest first" shows
         ];
     }
 }

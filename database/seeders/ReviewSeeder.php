@@ -14,36 +14,33 @@ class ReviewSeeder extends Seeder
      */
     public function run(): void
     {
-        // ===== 1. Reviews for my own eatery (at least 3) =====
+        // ===== 1. 3 reviews for my own eatery =====
         $myEatery = Eatery::where('slug', 'carinderia-ni-perez')->first();
         $chris = User::where('email', 'perez@kaonta.test')->first();
         $tita = User::where('email', 'tita.perez@kaonta.test')->first();
-        $someoneElse = User::whereNotIn('id', [$chris->id, $tita->id])->inRandomOrder()->first();
 
-        // created through the eatery's reviews() relationship
-        $myEatery->reviews()->create([
-            'user_id' => $tita->id,
-            'rating' => 5,
-            'body' => 'Lami kaayo! Balik-balikan ni Tita Perez.',
+        // The factory fills in anything we don't pass (like a random user for
+        // the 3rd review). saveMany() through the relationship sets eatery_id.
+        // Different created_at dates so "newest first" is easy to see.
+        $myEatery->reviews()->saveMany([
+            Review::factory()->make([
+                'user_id' => $tita->id,
+                'rating' => 5,
+                'body' => 'Lami kaayo! Balik-balikan ni Tita Perez.',
+                'created_at' => now(),
+            ]),
+            Review::factory()->make([
+                'user_id' => $chris->id,
+                'rating' => 4,
+                'body' => 'Sabaw sa tinola init kaayo, perfect for rainy days.',
+                'created_at' => now()->subDays(3),
+            ]),
+            Review::factory()->make([
+                'rating' => 5,
+                'body' => 'Cheap and filling meal, the durian shake is a must try.',
+                'created_at' => now()->subDays(10),
+            ]),
         ]);
-
-        // created_at is not in $fillable, so for these two older reviews
-        // we set the date first and then save() them through the relationship
-        $review = new Review([
-            'user_id' => $chris->id,
-            'rating' => 4,
-            'body' => 'Sabaw sa tinola init kaayo, perfect for rainy days.',
-        ]);
-        $review->created_at = now()->subDays(3);
-        $myEatery->reviews()->save($review);
-
-        $review = new Review([
-            'user_id' => $someoneElse->id,
-            'rating' => 5,
-            'body' => 'Cheap and filling meal, the durian shake is a must try.',
-        ]);
-        $review->created_at = now()->subDays(10);
-        $myEatery->reviews()->save($review);
 
         // ===== 2. 0 to 6 random reviews for every OPEN factory eatery =====
         // Closed eateries get no reviews, so we only take is_open = true.
