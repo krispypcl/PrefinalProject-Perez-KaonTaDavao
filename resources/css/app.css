@@ -8,10 +8,83 @@
    instead of only following the computer's setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* =========================================================
+   Color palette
+   Every color the site uses is a variable here, with one value for light mode
+   and one for dark mode. The views use names like bg-surface or text-muted,
+   so changing the palette only means changing this part.
+   ========================================================= */
+
+/* Light mode: warm cream with orange */
+:root {
+    --page: var(--color-amber-50); /* page background */
+    --surface: var(--color-white); /* cards */
+    --surface-hover: var(--color-amber-50); /* rows and menu items on hover */
+    --line: var(--color-gray-200); /* borders and dividers */
+    --faint: var(--color-gray-300); /* input borders, empty stars */
+    --body: var(--color-gray-800); /* normal text */
+    --heading: var(--color-gray-900);
+    --muted: var(--color-gray-500); /* less important text */
+    --accent: var(--color-orange-700); /* links, eatery names, numbers */
+    --accent-hover: var(--color-orange-500);
+    --primary: var(--color-orange-700); /* main buttons */
+    --primary-hover: var(--color-orange-800);
+    --on-primary: var(--color-white); /* text on main buttons */
+    --header: var(--color-orange-700);
+    --on-header: var(--color-white);
+    --price: var(--color-green-700);
+    --danger: var(--color-red-600);
+}
+
+/* Dark mode: deep slate blue with orange, and soft (not pure white) text */
+.dark {
+    --page: var(--color-slate-900);
+    --surface: var(--color-slate-800);
+    --surface-hover: var(--color-slate-700);
+    --line: var(--color-slate-700);
+    --faint: var(--color-slate-600);
+    --body: var(--color-slate-300);
+    --heading: var(--color-slate-100);
+    --muted: var(--color-slate-400);
+    --accent: var(--color-orange-400);
+    --accent-hover: var(--color-orange-300);
+    --primary: var(--color-orange-700);
+    --primary-hover: var(--color-orange-600);
+    --on-primary: var(--color-orange-50);
+    --header: var(--color-slate-950);
+    --on-header: var(--color-slate-200);
+    --price: var(--color-emerald-400);
+    --danger: var(--color-red-400);
+
+    color-scheme: dark; /* native parts like the date picker also turn dark */
+}
+
+/* Turn the variables above into Tailwind colors, so classes like
+   bg-page, bg-surface, border-line, text-muted and text-accent exist */
+@theme inline {
+    --color-page: var(--page);
+    --color-surface: var(--surface);
+    --color-surface-hover: var(--surface-hover);
+    --color-line: var(--line);
+    --color-faint: var(--faint);
+    --color-body: var(--body);
+    --color-heading: var(--heading);
+    --color-muted: var(--muted);
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-on-primary: var(--on-primary);
+    --color-header: var(--header);
+    --color-on-header: var(--on-header);
+    --color-price: var(--price);
+    --color-danger: var(--danger);
+}
+
 @theme {
     /* Google Fonts (loaded in layouts/app.blade.php) */
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Fraunces', ui-serif, Georgia, serif; /* used as the font-display class for headings */
+    --font-display: 'Fraunces', ui-serif, Georgia, serif; /* the font-display class, for headings */
 
     /* small fade + slide in, used as motion-safe:animate-fade-in */
     --animate-fade-in: fade-in 0.35s ease-out;
@@ -32,20 +105,22 @@
    Base styles (plain HTML elements)
    ========================================================= */
 @layer base {
-    /* native inputs (like the date picker) also switch to dark */
-    .dark {
-        color-scheme: dark;
+    body {
+        @apply bg-page text-body transition-colors duration-300;
     }
 
-    /* in dark mode, headings are a bit brighter than the soft gray body text */
     h1,
     h2 {
-        @apply dark:text-stone-200;
+        @apply text-heading;
     }
 
     /* orange checkboxes instead of the default blue */
     input[type='checkbox'] {
-        @apply size-4 cursor-pointer accent-orange-700;
+        @apply size-4 cursor-pointer accent-orange-600;
+    }
+
+    input::placeholder {
+        @apply text-muted;
     }
 
     /* highlighted text */
@@ -67,7 +142,7 @@
 @layer components {
     /* ----- Cards ----- */
     .card {
-        @apply rounded-lg bg-white shadow dark:bg-stone-800 dark:shadow-black/30;
+        @apply rounded-lg bg-surface shadow dark:shadow-black/30;
     }
 
     /* cards that lift up a little on hover */
@@ -81,15 +156,25 @@
     }
 
     .btn-primary {
-        @apply bg-orange-700 text-white hover:bg-orange-800 dark:text-orange-50 dark:hover:bg-orange-600;
+        @apply bg-primary text-on-primary hover:bg-primary-hover;
     }
 
     .btn-danger {
-        @apply bg-red-600 text-white hover:bg-red-700 dark:bg-red-800 dark:text-red-50 dark:hover:bg-red-700;
+        @apply bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:text-red-50 dark:hover:bg-red-600;
     }
 
     .btn-outline {
-        @apply border border-gray-300 hover:bg-gray-100 dark:border-stone-600 dark:hover:bg-stone-700;
+        @apply border border-faint hover:bg-surface-hover;
+    }
+
+    /* the "Add Eatery" button inside the orange header */
+    .btn-header {
+        @apply bg-white px-3 py-1.5 text-orange-700 hover:bg-orange-100 dark:bg-primary dark:text-on-primary dark:hover:bg-primary-hover;
+    }
+
+    /* small red text button (Delete review) */
+    .btn-text-danger {
+        @apply -mx-2 cursor-pointer rounded px-2 py-0.5 text-sm text-danger transition-colors hover:bg-red-500/10;
     }
 
     /* ----- Header navigation: a soft pill appears behind the link ----- */
@@ -102,33 +187,31 @@
         @apply bg-white/20;
     }
 
-    /* ----- Text links: no underline, a highlighter slides in behind the text instead ----- */
+    /* ----- Text links: no underline. On hover a brighter color sweeps
+       across the letters from left to right. ----- */
     .link,
     .link-subtle {
-        --link-highlight: var(--color-orange-200);
-        border-radius: 3px;
-        padding: 0 3px; /* a little room around the text for the highlight... */
-        margin: 0 -3px; /* ...without moving the text */
-        background-image: linear-gradient(var(--link-highlight), var(--link-highlight));
-        background-repeat: no-repeat;
-        background-size: 0% 100%; /* the highlight starts with 0 width... */
-        transition: background-size 0.3s ease, color 0.2s ease;
-    }
-
-    /* darker, see-through highlight in dark mode */
-    .dark .link,
-    .dark .link-subtle {
-        --link-highlight: color-mix(in oklab, var(--color-orange-800) 50%, transparent);
+        /* the left half of the gradient is the hover color, the right half the normal color */
+        background-image: linear-gradient(to right, var(--accent-hover) 50%, var(--link-color) 50%);
+        background-size: 200% 100%;
+        background-position: 100% 0; /* show the right half (normal color) */
+        background-clip: text; /* paint the gradient only inside the letters */
+        color: transparent;
+        transition: background-position 0.4s ease;
     }
 
     .link:hover,
     .link-subtle:hover {
-        background-size: 100% 100%; /* ...and grows to full width on hover */
+        background-position: 0 0; /* slide to the left half (hover color) */
     }
 
-    /* .link is orange, .link-subtle keeps the color of the text around it */
     .link {
-        @apply text-orange-800 dark:text-orange-300;
+        --link-color: var(--accent);
+    }
+
+    /* gray links, like the district name on cards */
+    .link-subtle {
+        --link-color: var(--muted);
     }
 
     /* ----- Forms ----- */
@@ -137,12 +220,12 @@
     }
 
     .form-input {
-        @apply w-full rounded border border-gray-300 bg-white px-3 py-2 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none dark:border-stone-600 dark:bg-stone-900 dark:focus:ring-orange-900;
+        @apply w-full rounded border border-faint bg-surface px-3 py-2 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 focus:outline-none;
     }
 
     /* the @error message under each field */
     .field-error {
-        @apply mt-1 text-sm text-red-600 dark:text-red-400;
+        @apply mt-1 text-sm text-danger;
     }
 
     /* ----- Custom dropdown (built by resources/js/dropdown.js) ----- */
@@ -154,18 +237,18 @@
         @apply flex cursor-pointer items-center justify-between gap-2 text-left;
     }
 
-    /* the "-- Choose ... --" text is gray like a placeholder */
+    /* the "Choose ..." text is gray like a placeholder */
     .dropdown-placeholder {
-        @apply text-gray-400 dark:text-stone-500;
+        @apply text-muted;
     }
 
     .dropdown-chevron {
-        @apply size-4 shrink-0 text-gray-400 transition-transform duration-200;
+        @apply size-4 shrink-0 text-muted transition-transform duration-200;
     }
 
     /* closed menu: invisible, slightly smaller, and clicks go through it */
     .dropdown-menu {
-        @apply pointer-events-none absolute z-30 mt-1 max-h-60 w-full origin-top scale-95 overflow-auto rounded-md border border-gray-200 bg-white p-1 opacity-0 shadow-lg transition duration-150 dark:border-stone-700 dark:bg-stone-800;
+        @apply pointer-events-none absolute z-30 mt-1 max-h-60 w-full origin-top scale-95 overflow-auto rounded-md border border-line bg-surface p-1 opacity-0 shadow-lg transition duration-150;
     }
 
     /* open menu (the .is-open class is added by the JavaScript) */
@@ -178,38 +261,46 @@
     }
 
     .dropdown-item {
-        @apply cursor-pointer rounded px-3 py-2 transition-colors hover:bg-orange-50 focus:bg-orange-50 focus:outline-none dark:hover:bg-stone-700 dark:focus:bg-stone-700;
+        @apply cursor-pointer rounded px-3 py-2 transition-colors hover:bg-surface-hover focus:bg-surface-hover focus:outline-none;
     }
 
     /* the option that is currently chosen */
     .dropdown-item[aria-selected='true'] {
-        @apply font-semibold text-orange-700 dark:text-orange-300;
+        @apply font-semibold text-accent;
     }
 
     /* ----- Pagination (partials/pagination.blade.php) ----- */
     .page-link {
-        @apply flex size-10 items-center justify-center rounded-full font-medium transition-colors duration-150 hover:bg-orange-100 dark:hover:bg-stone-700;
+        @apply flex size-10 items-center justify-center rounded-full font-medium transition-colors duration-150 hover:bg-surface-hover;
     }
 
     .page-link-active {
-        @apply bg-orange-700 text-white hover:bg-orange-700 dark:text-orange-50 dark:hover:bg-orange-700;
+        @apply bg-primary text-on-primary hover:bg-primary;
     }
 
     .page-link-disabled {
-        @apply cursor-default opacity-40 hover:bg-transparent dark:hover:bg-transparent;
+        @apply cursor-default opacity-40 hover:bg-transparent;
     }
 
     /* ----- Badges ----- */
     .badge {
-        @apply rounded-full bg-orange-100 px-2.5 py-0.5 text-xs text-orange-800 transition-colors hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800;
+        @apply rounded-full bg-orange-100 px-2.5 py-0.5 text-xs text-orange-800 transition-colors hover:bg-orange-200 dark:bg-orange-400/15 dark:text-orange-300 dark:hover:bg-orange-400/25;
     }
 
     .badge-closed {
-        @apply shrink-0 rounded bg-gray-700 px-2 py-0.5 text-xs font-semibold text-white dark:bg-stone-600;
+        @apply shrink-0 rounded bg-gray-700 px-2 py-0.5 text-xs font-semibold text-white dark:bg-slate-600 dark:text-slate-100;
     }
 
-    /* ----- Text ----- */
-    .muted {
-        @apply text-gray-600 dark:text-stone-400;
+    .badge-bestseller {
+        @apply ml-1 rounded bg-amber-200 px-2 py-0.5 text-xs font-semibold text-amber-900 dark:bg-amber-400/20 dark:text-amber-200;
+    }
+
+    /* ----- Messages (partials/flash and partials/errors) ----- */
+    .alert-success {
+        @apply mb-6 rounded border border-green-300 bg-green-100 px-4 py-3 text-green-800 motion-safe:animate-fade-in dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300;
+    }
+
+    .alert-error {
+        @apply mb-6 rounded border border-red-300 bg-red-50 p-4 text-sm text-red-700 motion-safe:animate-fade-in dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300;
     }
 }
