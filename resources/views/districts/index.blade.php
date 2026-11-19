@@ -6,8 +6,8 @@
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         @foreach ($districts as $district)
             <a href="{{ route('districts.show', $district) }}" class="card card-hover group p-5">
-                <p class="font-display text-lg font-semibold text-orange-800 transition-colors group-hover:text-orange-600 dark:text-orange-300 dark:group-hover:text-orange-200">{{ $district->name }}</p>
-                <p class="muted text-sm">
+                <p class="font-display text-lg font-semibold text-accent transition-colors group-hover:text-accent-hover">{{ $district->name }}</p>
+                <p class="text-muted text-sm">
                     {{ $district->eateries_count }} {{ Str::plural('eatery', $district->eateries_count) }}
                 </p>
             </a>

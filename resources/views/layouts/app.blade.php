@@ -22,10 +22,10 @@
     {{-- Tailwind CSS and JS are loaded through Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen flex-col bg-amber-50 text-gray-800 transition-colors duration-300 dark:bg-stone-900 dark:text-stone-300">
+<body class="flex min-h-screen flex-col">
 
     {{-- sticky: the header stays at the top while scrolling --}}
-    <header class="sticky top-0 z-40 bg-orange-700 text-white shadow dark:bg-orange-950 dark:text-orange-100">
+    <header class="sticky top-0 z-40 bg-header text-on-header shadow">
         <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between">
             <a href="{{ route('home') }}" class="font-display text-2xl font-bold transition-opacity hover:opacity-85">Kaon Ta! Davao – Perez's Food Guide</a>
 
@@ -60,7 +60,7 @@
         @yield('content')
     </main>
 
-    <footer class="muted py-4 text-center text-sm">
+    <footer class="text-muted py-4 text-center text-sm">
         Kaon Ta! Davao &middot; Chris Roldan Perez &middot; 2026
     </footer>
 

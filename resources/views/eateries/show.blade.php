@@ -5,14 +5,14 @@
     <div class="card mb-6 p-6">
         <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-                <h1 class="font-display text-4xl font-bold text-orange-800 dark:text-orange-300">
+                <h1 class="font-display text-4xl font-bold text-accent">
                     {{ $eatery->name }}
                     @if (! $eatery->is_open)
                         <span class="badge-closed ml-2 align-middle font-sans text-sm">Closed</span>
                     @endif
                 </h1>
 
-                <p class="muted mt-1">
+                <p class="text-muted mt-1">
                     <a href="{{ route('districts.show', $eatery->district) }}" class="link-subtle">{{ $eatery->district->name }}</a>
                     &middot; {{ $eatery->address }}
                 </p>
@@ -32,15 +32,15 @@
 
         <dl class="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
             <div>
-                <dt class="muted">Price range</dt>
-                <dd class="font-semibold text-green-700 dark:text-green-400">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }} ({{ $eatery->price_range }})</dd>
+                <dt class="text-muted">Price range</dt>
+                <dd class="font-semibold text-price">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }} ({{ $eatery->price_range }})</dd>
             </div>
             <div>
-                <dt class="muted">Specialty</dt>
+                <dt class="text-muted">Specialty</dt>
                 <dd>{{ $eatery->specialty ?? 'None' }}</dd>
             </div>
             <div>
-                <dt class="muted">Rating</dt>
+                <dt class="text-muted">Rating</dt>
                 <dd>
                     {{-- the reviews are already loaded for the list below,
                          so the average and count come from that collection (no extra query) --}}
@@ -63,19 +63,19 @@
             <section class="card p-6">
                 <h2 class="font-display mb-3 text-2xl font-bold">Dishes</h2>
 
-                <ul class="divide-y divide-gray-200 dark:divide-stone-700">
+                <ul class="divide-y divide-line">
                     @forelse ($eatery->dishes as $dish)
-                        <li class="-mx-2 flex justify-between rounded px-2 py-2 transition-colors hover:bg-amber-50 dark:hover:bg-stone-700/50">
+                        <li class="-mx-2 flex justify-between rounded px-2 py-2 transition-colors hover:bg-surface-hover">
                             <span>
                                 {{ $dish->name }}
                                 @if ($dish->is_bestseller)
-                                    <span class="ml-1 rounded bg-amber-200 px-2 py-0.5 text-xs font-semibold text-amber-900 dark:bg-amber-900 dark:text-amber-100">Bestseller</span>
+                                    <span class="badge-bestseller">Bestseller</span>
                                 @endif
                             </span>
                             <span class="font-semibold">₱{{ number_format($dish->price, 2) }}</span>
                         </li>
                     @empty
-                        <li class="muted py-2">No dishes listed yet.</li>
+                        <li class="text-muted py-2">No dishes listed yet.</li>
                     @endforelse
                 </ul>
             </section>
@@ -86,10 +86,10 @@
 
                 <div class="flex flex-col gap-4">
                     @forelse ($eatery->reviews as $review)
-                        <div class="border-b border-gray-200 pb-3 dark:border-stone-700">
+                        <div class="border-b border-line pb-3">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <a href="{{ route('reviewers.show', $review->user) }}" class="link font-semibold">{{ $review->user->name }}</a>
-                                <span class="muted text-sm">{{ $review->created_at->format('M d, Y') }}</span>
+                                <span class="text-muted text-sm">{{ $review->created_at->format('M d, Y') }}</span>
                             </div>
                             <x-rating :value="$review->rating" /> <span class="text-sm">{{ $review->rating }}/5</span>
                             <p class="mt-1">{{ $review->body }}</p>
@@ -98,11 +98,11 @@
                             <form method="POST" action="{{ route('reviews.destroy', $review) }}" class="mt-2" onsubmit="return confirm('Delete this review?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="-mx-2 cursor-pointer rounded px-2 py-0.5 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950">Delete</button>
+                                <button type="submit" class="btn-text-danger">Delete</button>
                             </form>
                         </div>
                     @empty
-                        <p class="muted">No reviews yet.</p>
+                        <p class="text-muted">No reviews yet.</p>
                     @endforelse
                 </div>
             </section>
@@ -114,18 +114,18 @@
                 <h2 class="font-display mb-3 text-2xl font-bold">Business Permit</h2>
 
                 @if ($eatery->permit)
-                    <p class="muted text-sm">Permit number</p>
+                    <p class="text-muted text-sm">Permit number</p>
                     <p class="font-mono font-semibold">{{ $eatery->permit->permit_no }}</p>
 
-                    <p class="muted mt-2 text-sm">Expires on</p>
+                    <p class="text-muted mt-2 text-sm">Expires on</p>
                     <p class="font-semibold">{{ $eatery->permit->expires_on->format('F d, Y') }}</p>
 
                     {{-- expires_on is cast to a date, so we can compare it with today() --}}
                     @if ($eatery->permit->expires_on->lt(today()))
-                        <p class="mt-2 font-bold text-red-600 dark:text-red-400">Permit expired</p>
+                        <p class="mt-2 font-bold text-danger">Permit expired</p>
                     @endif
                 @else
-                    <p class="muted">No permit on file.</p>
+                    <p class="text-muted">No permit on file.</p>
                 @endif
             </section>
 
@@ -143,7 +143,7 @@
                         <div>
                             <label for="user_id" class="form-label">Reviewer</label>
                             <select id="user_id" name="user_id" class="form-input" data-dropdown>
-                                <option value="">-- Choose a reviewer --</option>
+                                <option value="">Choose a reviewer</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}" @selected(old('user_id') == $user->id)>{{ $user->name }}</option>
                                 @endforeach
@@ -157,7 +157,7 @@
                         <div>
                             <label for="rating" class="form-label">Rating</label>
                             <select id="rating" name="rating" class="form-input" data-dropdown>
-                                <option value="">-- Choose a rating --</option>
+                                <option value="">Choose a rating</option>
                                 @for ($i = 5; $i >= 1; $i--)
                                     <option value="{{ $i }}" @selected(old('rating') == $i)>{{ $i }} {{ Str::plural('star', $i) }}</option>
                                 @endfor
@@ -179,7 +179,7 @@
                         <button type="submit" class="btn btn-primary">Post Review</button>
                     </form>
                 @else
-                    <p class="muted">This eatery is closed. Reviews are paused.</p>
+                    <p class="text-muted">This eatery is closed. Reviews are paused.</p>
                 @endif
             </section>
         </aside>

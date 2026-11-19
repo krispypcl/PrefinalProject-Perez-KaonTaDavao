@@ -4,7 +4,7 @@
      The URLs already keep ?q=&district=&feature= because of withQueryString() in the controller. --}}
 @if ($paginator->hasPages())
     <nav class="flex flex-col items-center justify-between gap-3 sm:flex-row" aria-label="Pagination">
-        <p class="muted text-sm">
+        <p class="text-muted text-sm">
             Showing {{ $paginator->firstItem() }} to {{ $paginator->lastItem() }} of {{ $paginator->total() }} results
         </p>
 

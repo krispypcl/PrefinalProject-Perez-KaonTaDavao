@@ -29,7 +29,7 @@
     </form>
 
     @if ($eateries->isEmpty())
-        <p class="muted">No eateries match your filters.</p>
+        <p class="text-muted">No eateries match your filters.</p>
     @else
         {{-- 1 column on phones, 2 on tablets (md), 3 on desktop (lg) --}}
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

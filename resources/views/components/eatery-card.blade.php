@@ -14,10 +14,10 @@
         @endif
     </div>
 
-    <div class="muted text-sm">
+    <div class="text-muted text-sm">
         <a href="{{ route('districts.show', $eatery->district) }}" class="link-subtle">{{ $eatery->district->name }}</a>
         {{-- price range as peso signs --}}
-        &middot; <span class="font-semibold text-green-700 dark:text-green-400">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }}</span>
+        &middot; <span class="font-semibold text-price">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }}</span>
     </div>
 
     @if ($eatery->specialty)

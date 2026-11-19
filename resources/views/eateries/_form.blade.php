@@ -18,7 +18,7 @@
     <div>
         <label for="district_id" class="form-label">District</label>
         <select id="district_id" name="district_id" class="form-input" data-dropdown>
-            <option value="">-- Choose a district --</option>
+            <option value="">Choose a district</option>
             @foreach ($districts as $district)
                 <option value="{{ $district->id }}" @selected(old('district_id', $eatery->district_id) == $district->id)>{{ $district->name }}</option>
             @endforeach
@@ -41,7 +41,7 @@
     <div>
         <label for="price_range" class="form-label">Price range</label>
         <select id="price_range" name="price_range" class="form-input" data-dropdown>
-            <option value="">-- Choose a price range --</option>
+            <option value="">Choose a price range</option>
             <option value="budget" @selected(old('price_range', $eatery->price_range) == 'budget')>₱ Budget</option>
             <option value="mid" @selected(old('price_range', $eatery->price_range) == 'mid')>₱₱ Mid</option>
             <option value="splurge" @selected(old('price_range', $eatery->price_range) == 'splurge')>₱₱₱ Splurge</option>
@@ -53,7 +53,7 @@
 
     {{-- Specialty --}}
     <div>
-        <label for="specialty" class="form-label">Specialty <span class="muted text-sm">(optional)</span></label>
+        <label for="specialty" class="form-label">Specialty <span class="text-muted text-sm">(optional)</span></label>
         <input type="text" id="specialty" name="specialty" value="{{ old('specialty', $eatery->specialty) }}" class="form-input">
         @error('specialty')
             <p class="field-error">{{ $message }}</p>
