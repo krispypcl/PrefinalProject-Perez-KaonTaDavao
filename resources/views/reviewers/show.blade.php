@@ -3,7 +3,7 @@
 @section('content')
     <h1 class="text-3xl font-bold">{{ $user->name }}</h1>
     <p class="text-gray-600 mb-6">
-        {{ $user->reviews->count() }} {{ $user->reviews->count() == 1 ? 'review' : 'reviews' }} written
+        {{ $user->reviews->count() }} {{ Str::plural('review', $user->reviews->count()) }} written
     </p>
 
     <div class="flex flex-col gap-4">

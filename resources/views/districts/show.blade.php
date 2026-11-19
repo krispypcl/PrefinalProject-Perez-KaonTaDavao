@@ -7,7 +7,7 @@
 
     {{-- reviews_count comes from loadCount('reviews') on the hasManyThrough relationship --}}
     <p class="text-gray-600 mb-6">
-        {{ $district->reviews_count }} {{ $district->reviews_count == 1 ? 'review' : 'reviews' }} in {{ $district->name }}
+        {{ $district->reviews_count }} {{ Str::plural('review', $district->reviews_count) }} in {{ $district->name }}
     </p>
 
     @if ($district->eateries->isEmpty())

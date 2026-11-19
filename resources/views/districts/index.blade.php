@@ -8,7 +8,7 @@
             <a href="{{ route('districts.show', $district) }}" class="bg-white rounded-lg shadow p-5 hover:bg-orange-50">
                 <p class="text-lg font-semibold text-orange-800">{{ $district->name }}</p>
                 <p class="text-sm text-gray-600">
-                    {{ $district->eateries_count }} {{ $district->eateries_count == 1 ? 'eatery' : 'eateries' }}
+                    {{ $district->eateries_count }} {{ Str::plural('eatery', $district->eateries_count) }}
                 </p>
             </a>
         @endforeach

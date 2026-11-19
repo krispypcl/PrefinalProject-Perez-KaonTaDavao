@@ -16,7 +16,8 @@
 
     <div class="text-sm text-gray-600">
         <a href="{{ route('districts.show', $eatery->district) }}" class="hover:underline">{{ $eatery->district->name }}</a>
-        &middot; <span class="font-semibold text-green-700">{{ $eatery->priceSigns() }}</span>
+        {{-- price range as peso signs --}}
+        &middot; <span class="font-semibold text-green-700">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }}</span>
     </div>
 
     @if ($eatery->specialty)
@@ -34,11 +35,6 @@
     </div>
 
     <div class="mt-auto pt-2 text-sm">
-        @if ($eatery->reviews_count > 0)
-            <x-rating :value="$eatery->reviews_avg_rating" />
-            <span>{{ number_format($eatery->reviews_avg_rating, 1) }} ★ ({{ $eatery->reviews_count }} {{ $eatery->reviews_count == 1 ? 'review' : 'reviews' }})</span>
-        @else
-            <span class="text-gray-500">No reviews yet</span>
-        @endif
+        <x-rating :value="$eatery->reviews_avg_rating" :count="$eatery->reviews_count" />
     </div>
 </div>

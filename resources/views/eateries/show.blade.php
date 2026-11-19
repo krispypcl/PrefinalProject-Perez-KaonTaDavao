@@ -33,7 +33,7 @@
         <dl class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
             <div>
                 <dt class="text-gray-500">Price range</dt>
-                <dd class="font-semibold text-green-700">{{ $eatery->priceSigns() }} ({{ $eatery->price_range }})</dd>
+                <dd class="font-semibold text-green-700">{{ ['budget' => '₱', 'mid' => '₱₱', 'splurge' => '₱₱₱'][$eatery->price_range] }} ({{ $eatery->price_range }})</dd>
             </div>
             <div>
                 <dt class="text-gray-500">Specialty</dt>
@@ -42,12 +42,9 @@
             <div>
                 <dt class="text-gray-500">Rating</dt>
                 <dd>
-                    @if ($eatery->reviews_count > 0)
-                        <x-rating :value="$eatery->reviews_avg_rating" />
-                        {{ number_format($eatery->reviews_avg_rating, 1) }} ★ ({{ $eatery->reviews_count }} {{ $eatery->reviews_count == 1 ? 'review' : 'reviews' }})
-                    @else
-                        No reviews yet
-                    @endif
+                    {{-- the reviews are already loaded for the list below,
+                         so the average and count come from that collection (no extra query) --}}
+                    <x-rating :value="$eatery->reviews->avg('rating')" :count="$eatery->reviews->count()" />
                 </dd>
             </div>
         </dl>
@@ -142,17 +139,7 @@
                 <h2 class="text-xl font-bold mb-3">Write a Review</h2>
 
                 @if ($eatery->is_open)
-                    {{-- error summary --}}
-                    @if ($errors->any())
-                        <div class="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-                            <p class="font-semibold">Please fix the following errors:</p>
-                            <ul class="list-disc pl-5">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                    @include('partials.errors')
 
                     <form method="POST" action="{{ route('eateries.reviews.store', $eatery) }}" class="flex flex-col gap-4">
                         @csrf
@@ -177,7 +164,7 @@
                             <select id="rating" name="rating" class="w-full rounded border border-gray-300 px-3 py-2">
                                 <option value="">-- Choose a rating --</option>
                                 @for ($i = 5; $i >= 1; $i--)
-                                    <option value="{{ $i }}" @selected(old('rating') == $i)>{{ $i }} {{ $i == 1 ? 'star' : 'stars' }}</option>
+                                    <option value="{{ $i }}" @selected(old('rating') == $i)>{{ $i }} {{ Str::plural('star', $i) }}</option>
                                 @endfor
                             </select>
                             @error('rating')

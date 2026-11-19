@@ -1,34 +1,14 @@
 {{-- Shared form fields for create.blade.php and edit.blade.php.
-     On create there is no $eatery, so "$eatery->x ?? ''" gives an empty value.
-     On edit, old() falls back to the saved value from the database. --}}
-@php
-    // saved permit values (only on edit)
-    $savedPermitNo = isset($eatery) && $eatery->permit ? $eatery->permit->permit_no : '';
-    $savedExpiresOn = isset($eatery) && $eatery->permit ? $eatery->permit->expires_on->format('Y-m-d') : '';
-
-    // which feature boxes are checked:
-    // after a failed submit use what the user checked (old), otherwise the saved features
-    $savedFeatures = isset($eatery) ? $eatery->features->pluck('id')->toArray() : [];
-    $checkedFeatures = session()->hasOldInput() ? old('features', []) : $savedFeatures;
-@endphp
-
-{{-- error summary --}}
-@if ($errors->any())
-    <div class="mb-6 rounded border border-red-300 bg-red-50 p-4 text-red-700">
-        <p class="font-semibold">Please fix the following errors:</p>
-        <ul class="list-disc pl-5 text-sm">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+     On create, $eatery is a new empty Eatery, so the fields start blank.
+     On edit, old() falls back to the saved value from the database.
+     ?-> (nullsafe) is used for the permit because a new eatery has no permit yet. --}}
+@include('partials.errors')
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
     {{-- Name --}}
     <div>
         <label for="name" class="block font-medium mb-1">Name</label>
-        <input type="text" id="name" name="name" value="{{ old('name', $eatery->name ?? '') }}"
+        <input type="text" id="name" name="name" value="{{ old('name', $eatery->name) }}"
                class="w-full rounded border border-gray-300 px-3 py-2">
         @error('name')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -41,7 +21,7 @@
         <select id="district_id" name="district_id" class="w-full rounded border border-gray-300 px-3 py-2">
             <option value="">-- Choose a district --</option>
             @foreach ($districts as $district)
-                <option value="{{ $district->id }}" @selected(old('district_id', $eatery->district_id ?? '') == $district->id)>
+                <option value="{{ $district->id }}" @selected(old('district_id', $eatery->district_id) == $district->id)>
                     {{ $district->name }}
                 </option>
             @endforeach
@@ -54,7 +34,7 @@
     {{-- Address --}}
     <div class="md:col-span-2">
         <label for="address" class="block font-medium mb-1">Address</label>
-        <input type="text" id="address" name="address" value="{{ old('address', $eatery->address ?? '') }}"
+        <input type="text" id="address" name="address" value="{{ old('address', $eatery->address) }}"
                class="w-full rounded border border-gray-300 px-3 py-2">
         @error('address')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -66,9 +46,9 @@
         <label for="price_range" class="block font-medium mb-1">Price range</label>
         <select id="price_range" name="price_range" class="w-full rounded border border-gray-300 px-3 py-2">
             <option value="">-- Choose a price range --</option>
-            <option value="budget" @selected(old('price_range', $eatery->price_range ?? '') == 'budget')>₱ Budget</option>
-            <option value="mid" @selected(old('price_range', $eatery->price_range ?? '') == 'mid')>₱₱ Mid</option>
-            <option value="splurge" @selected(old('price_range', $eatery->price_range ?? '') == 'splurge')>₱₱₱ Splurge</option>
+            <option value="budget" @selected(old('price_range', $eatery->price_range) == 'budget')>₱ Budget</option>
+            <option value="mid" @selected(old('price_range', $eatery->price_range) == 'mid')>₱₱ Mid</option>
+            <option value="splurge" @selected(old('price_range', $eatery->price_range) == 'splurge')>₱₱₱ Splurge</option>
         </select>
         @error('price_range')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -78,7 +58,7 @@
     {{-- Specialty --}}
     <div>
         <label for="specialty" class="block font-medium mb-1">Specialty <span class="text-gray-400 text-sm">(optional)</span></label>
-        <input type="text" id="specialty" name="specialty" value="{{ old('specialty', $eatery->specialty ?? '') }}"
+        <input type="text" id="specialty" name="specialty" value="{{ old('specialty', $eatery->specialty) }}"
                class="w-full rounded border border-gray-300 px-3 py-2">
         @error('specialty')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -91,7 +71,7 @@
     <div class="md:col-span-2">
         <input type="hidden" name="is_open" value="0">
         <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="is_open" value="1" @checked(old('is_open', $eatery->is_open ?? true))>
+            <input type="checkbox" name="is_open" value="1" @checked(old('is_open', $eatery->is_open))>
             <span class="font-medium">Open (accepting reviews)</span>
         </label>
         @error('is_open')
@@ -99,13 +79,16 @@
         @enderror
     </div>
 
-    {{-- Features checkboxes: name="features[]" sends an array of feature ids --}}
+    {{-- Features checkboxes: name="features[]" sends an array of feature ids.
+         After a failed submit we use what the user checked (old input),
+         otherwise we check the eatery's saved features. --}}
     <div class="md:col-span-2">
         <p class="font-medium mb-1">Features</p>
         <div class="flex flex-wrap gap-4">
             @foreach ($features as $feature)
                 <label class="inline-flex items-center gap-2">
-                    <input type="checkbox" name="features[]" value="{{ $feature->id }}" @checked(in_array($feature->id, $checkedFeatures))>
+                    <input type="checkbox" name="features[]" value="{{ $feature->id }}"
+                           @checked(session()->hasOldInput() ? in_array($feature->id, old('features', [])) : $eatery->features->contains($feature))>
                     <span>{{ $feature->name }}</span>
                 </label>
             @endforeach
@@ -121,17 +104,17 @@
     {{-- Permit number --}}
     <div>
         <label for="permit_no" class="block font-medium mb-1">Permit number</label>
-        <input type="text" id="permit_no" name="permit_no" value="{{ old('permit_no', $savedPermitNo) }}"
+        <input type="text" id="permit_no" name="permit_no" value="{{ old('permit_no', $eatery->permit?->permit_no) }}"
                placeholder="DVO-2026-0904" class="w-full rounded border border-gray-300 px-3 py-2">
         @error('permit_no')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
         @enderror
     </div>
 
-    {{-- Permit expiry date --}}
+    {{-- Permit expiry date (format Y-m-d is what <input type="date"> expects) --}}
     <div>
         <label for="expires_on" class="block font-medium mb-1">Permit expiry date</label>
-        <input type="date" id="expires_on" name="expires_on" value="{{ old('expires_on', $savedExpiresOn) }}"
+        <input type="date" id="expires_on" name="expires_on" value="{{ old('expires_on', $eatery->permit?->expires_on->format('Y-m-d')) }}"
                class="w-full rounded border border-gray-300 px-3 py-2">
         @error('expires_on')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
