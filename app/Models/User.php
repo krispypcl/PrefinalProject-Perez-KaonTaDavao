@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // One user (reviewer) has many reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }
