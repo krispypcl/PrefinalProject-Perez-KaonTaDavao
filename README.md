@@ -7,6 +7,11 @@ CS Elective 2 Full-Stack Development (Laravel) · Ateneo de Davao University
 
 A Laravel 12 + SQLite app where the City Tourism Office can list carinderias and eateries by district, show each eatery's business permit, dishes and features, and collect reviews from residents. There is no login. Every page is public, and the review form has a Reviewer select instead.
 
+Extras:
+- A **dark/light mode** toggle in the header (the 🌙 / ☀️ button). The choice is saved in the browser's localStorage.
+- **Google Fonts**: Fraunces for headings and Plus Jakarta Sans for body text.
+- Small **hover effects and fade-in animations**, written as Tailwind classes. They turn off automatically if the computer is set to reduce motion.
+
 ## Setup
 
 ```bash
