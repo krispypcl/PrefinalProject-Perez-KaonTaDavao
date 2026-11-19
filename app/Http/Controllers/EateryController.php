@@ -76,8 +76,9 @@ class EateryController extends Controller
             },
         ]);
 
-        // users for the Reviewer select in the review form, A-Z
-        $users = User::orderBy('name')->get();
+        // users for the Reviewer select, A-Z.
+        // Closed eateries don't show the review form, so we skip that query for them.
+        $users = $eatery->is_open ? User::orderBy('name')->get() : collect();
 
         return view('eateries.show', compact('eatery', 'users'));
     }
