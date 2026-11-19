@@ -1,4 +1,4 @@
-<nav class="flex flex-wrap gap-4 text-sm font-medium">
+<nav class="flex flex-wrap items-center gap-4 text-sm font-medium">
     <a href="{{ route('home') }}" class="hover:underline">Home</a>
     <a href="{{ route('eateries.index') }}" class="hover:underline">Eateries</a>
     <a href="{{ route('districts.index') }}" class="hover:underline">Districts</a>
