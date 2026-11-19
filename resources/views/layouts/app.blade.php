@@ -22,9 +22,9 @@
     {{-- Tailwind CSS and JS are loaded through Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen flex-col bg-amber-50 text-gray-800 transition-colors duration-300 dark:bg-stone-900 dark:text-stone-100">
+<body class="flex min-h-screen flex-col bg-amber-50 text-gray-800 transition-colors duration-300 dark:bg-stone-900 dark:text-stone-300">
 
-    <header class="bg-orange-700 text-white shadow dark:bg-orange-950">
+    <header class="bg-orange-700 text-white shadow dark:bg-orange-950 dark:text-orange-100">
         <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between">
             <a href="{{ route('home') }}" class="font-display text-2xl font-bold transition-opacity hover:opacity-90">Kaon Ta! Davao – Perez's Food Guide</a>
 
